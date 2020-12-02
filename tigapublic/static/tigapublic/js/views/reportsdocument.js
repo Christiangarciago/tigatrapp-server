@@ -99,6 +99,7 @@ var ReportsdocumentView = MapView.extend({
                 if(row.expert_validation_result !== null &&
                     row.expert_validation_result.indexOf('#') !== -1){
                     row.expert_validation_result = row.expert_validation_result.split('#');
+                    console.log(row.category)
                 }
 
             }
@@ -114,12 +115,16 @@ var ReportsdocumentView = MapView.extend({
             var stuff = window.opener.document.getElementById("hashtag_filters").outerHTML;
             var hastag_opener_value = window.opener.document.getElementById("hashtag_search_text").value;
 
-            if (hastag_opener_value.length){
-               if (hastag_opener_value.trim()!=''){
-                 $('#hashtag_search_text').val(hastag_opener_value);
-                 $('#hashtag_search_text').prop('disabled',true);
-                }
-              }
+            // if (hastag_opener_value.length){
+            //    if (hastag_opener_value.trim()!=''){
+            //      $('#hashtag_search_text').val(hastag_opener_value);
+            //      $('#hashtag_search_text').prop('disabled',true);
+            //     }
+            //   }
+
+            //Disable hashtack and  municipalities boxes
+            $('#hashtag_search_text').prop('disabled',true);
+            $('#municipality_group').find('input').prop('disabled', true)
 
             //var stuff = window.opener.$("#notif_filters").clone();
             if (window.opener.document.getElementById("notif_filters")){
@@ -135,10 +140,7 @@ var ReportsdocumentView = MapView.extend({
               stuff.removeClass('active');
             }
 
-            //Disable municipalities checkbox
-            if ($('#municipalities-checkbox').length){
-              $('#municipalities-checkbox').prop('disabled', true)
-            }
+
             //Remove municipalities cancel x
             $('div.token a.close').remove()
             $('span.token-label').css('padding-right','4px')
@@ -148,7 +150,14 @@ var ReportsdocumentView = MapView.extend({
             //remove some unnecessary sublist elements
             $('#map_layers > li.sublist-group-item').remove();
             // remove userfixes layer
-            $('#map_layers > li.list-group-item > label[i18n="layer.userfixes"]').parent().remove();
+
+            if (MOSQUITO.config.keyLayersExcludedFromSharingURL.length){
+              MOSQUITO.config.keyLayersExcludedFromSharingURL.forEach(function(e){
+                  $('#map_layers > li#layer_'+e).parent().remove();
+              })
+
+            }
+
             $('#legend_reports_map button').addClass('disabled');
 
             // Create header map
@@ -162,7 +171,7 @@ var ReportsdocumentView = MapView.extend({
             var theMap = L.map('reports_header_map', { zoomControl:false})
                 .setView(c,z);
 
-            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            L.tileLayer('//{s}.tile.osm.org/{z}/{x}/{y}.png', {
                     minZoom: z, // prevent from zooming
                     maxZoom: z,
                     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -185,7 +194,7 @@ var ReportsdocumentView = MapView.extend({
                 map = L.map('map_report_' + row.id, { zoomControl:false}).
                     setView(center, 16);
 
-                L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                L.tileLayer('//{s}.tile.osm.org/{z}/{x}/{y}.png', {
                         maxZoom: 18,
                         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     }).addTo(map);

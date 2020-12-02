@@ -15,6 +15,7 @@ _HOST_ip = conf.DATABASES['default']['HOST']  # posrgresql ver 1.18.1
 _DB_USER = conf.DATABASES['default']['USER']
 _DB_PASSWORD = conf.DATABASES['default']['PASSWORD']
 _DB_NAME = conf.DATABASES['default']['NAME']
+_DB_PORT = conf.DATABASES['default']['PORT']
 #Apparently unused
 #_LOCAL_data = '/home/jgarriga/mosquitoAlert/data/'
 
@@ -22,7 +23,7 @@ _DB_NAME = conf.DATABASES['default']['NAME']
 # +++ mosquitoAlert data base connect/disconnect functions
 
 def connect():
-    dbConn = psycopg2.connect(host=_HOST_ip, user=_DB_USER, password=_DB_PASSWORD, database=_DB_NAME)
+    dbConn = psycopg2.connect(host=_HOST_ip, user=_DB_USER, password=_DB_PASSWORD, database=_DB_NAME, port=_DB_PORT)
     return dbConn
 
 
@@ -45,9 +46,9 @@ class Cursor(psycopg2.extensions.cursor):
         for row in range(rows):
             if self.rownumber < self.rowcount:
                 print
-                print '+++ %s' % str(self.rownumber).zfill(6)
+                print ('+++ %s' % str(self.rownumber).zfill(6))
                 for field, fieldValue in zip(self.description, self.fetchone()):
-                    print field.name, ':', fieldValue
+                    print (field.name, ':', fieldValue)
 
 
 # +++ mosquitoAlert Table Class
@@ -81,22 +82,22 @@ class Table:
 
     def fieldNames(self):
         for index, field in enumerate(self.fList):
-            print str(index).zfill(2), '.', field.name
+            print (str(index).zfill(2), '.', field.name)
 
     def selectAll(self):
         self.cursor.execute('select * from %s;' % self.name)
-        if self.interactive: print '+++ totalRows:%6.0i' % self.cursor.rowcount
+        if self.interactive: print ('+++ totalRows:%6.0i' % self.cursor.rowcount)
 
     def selectKey(self, keyName, keyValue):
         sql = 'select * from %s where %s = ' % (self.name, keyName) + '(%s);'
         self.cursor.execute(sql, (keyValue,))
-        if self.interactive: print '+++ totalRows:%6.0i' % self.cursor.rowcount
+        if self.interactive: print ('+++ totalRows:%6.0i' % self.cursor.rowcount)
 
     def printRow(self, row):
         print
-        print '+++ %s' % str(self.cursor.rownumber).zfill(6)
+        print ('+++ %s' % str(self.cursor.rownumber).zfill(6))
         for field, rowValue in zip(self.fList, row):
-            print field.name, ':', rowValue
+            print (field.name, ':', rowValue)
 
     def browse(self, rows=1):
         for row in range(rows):

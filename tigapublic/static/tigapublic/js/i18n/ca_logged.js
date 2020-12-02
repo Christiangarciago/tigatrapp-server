@@ -1,4 +1,4 @@
-var trans = trans || {};
+  var trans = trans || {};
 
 add = {
   'layer.trash_layer': 'Altres observacions',
@@ -140,7 +140,7 @@ add = {
   'epi.date_symptom':'Data primers simptomes',
   'epi.date_arribal': 'Data d\'arribada',
   'epi.date_notification': 'Data de notificació',
-  'epi.date_nodate': 'Sense data (arribada/notificació)',
+  'epi.date_nodate': 'Sense data',
   'epi.age': 'Edat',
   'epi.country':'País visitat',
   'epi.patient_state':'Estat',
@@ -182,5 +182,58 @@ add = {
   'epidemiology.upload-explanation': 'ATENCIÓ!! Aquest procés d\'importació eliminarà totes les dades prèviament emmagatzemades de la capa d\'Epidemiologia',
   'epidemiology.empty-layer': 'En aquests moments no hi ha dades d\'epidemiologia',
   'epidemiology.upload-error': 'S\'ha produït un error durant el procés d\'importació',
+
+  //model_selector
+  'layer.models.virus': 'Tipo',
+  'layer.models.den': 'Dengue',
+  'layer.models.zika': 'Zika',
+  'layer.models.yf': 'Febre groga',
+  'layer.models.chk': 'Chikungunya',
+  'layer.models.wnv': 'Virus de l\'oest del nil',
+
+  'layer.predictionmodels.virus': 'Probabilitat malaltia',
+  'layer.predictionmodels-virus.description': 'El mapa mostra estimacions de la probabilitat d\'alerta de mosquits tigre, que representa la probabilitat que un participant enviï un informe de mosquit tigre fiable durant un període de dues setmanes, controlant l\'esforç de mostreig (és a dir, que el model representa el fet que hi hagi més participants en algunes àrees que en altres).<p>Aquestes estimacions es mostren en una graella de 0,05 graus de latitud per 0,05 graus de longitud i es promitgen per mes. La probabilitat d\'alerta depèn principalment de la distribució de la població del mosquit tigre i de l\'esforç de mostreig collectiu, que varia segons la ubicació i el mes. La probabilitat d\'alerta s\'ha demostrat que és un bon predictor de la presència de mosquits tigre mesurat pels mètodes tradicionals de vigilància (ovitraps), tal com s\'explica a Nature Communications 8: 916 (2017), <a href="https://doi.org/10.1038/s41467-017-00914-9" target="_blank">https://doi.org/10.1038/s41467-017-00914-9</a>. Les estimacions s\'actualitzen setmanalment a mesura que apareixen noves dades.</p><p>Tingueu en compte que aquesta capa de probabilitat d\'alerta només es pot filtrar amb els selectors d\'any i mes que es mostren aquí (i no amb els filtres addicionals a continuació, que són per a altres capes).</p>',
+
+  //sugbroups
+  'group.tiger': 'Mosquit tigre',
+  'group.zika': 'Mosquit febre groga',
+  'group.japonicus': 'Aedes japonicus',
+  'group.koreicus': 'Aedes koreicus',
+  'group.culex': 'Culex pipiens',
+
+  'header.motto': 'Mapa privat Mosquito Alert',
+  'modal.firstvisit.title': 'Et donem la benvinguda al mapa privat de Mosquito Alert',
+  'modal.firstvisit.content': '<p>Al mapa privat podràs consultar les dades de mosquits enviats per la ciutadania, mitjançant l\'app Mosquito Alert, i validats per professionals de l\'entomologia. També podràs consultar dades que encara no han estat validades, així com dades que no es fan públiques per contenir informació considerada sensible, però potencialment útil per al seguiment i control d\'aquestes espècies. L\'eina no sols et permet <b>visualitzar dades</b>, sinó també filtrar-les segons els teus interessos, elaborar <b>informes personalitzats</b> o fins i tot <b>descarregar-les</b>. A més, podràs <b>enviar notificacions</b> directament a la ciutadania a través de l\'app de Mosquito Alert, seleccionant observacions en el mapa.</p>' +
+    '<ul>' +
+      '<li><i class="fa fa-bars" aria-hidden="true"></i>  Obre les diferents capes de dades, filtra\'ls per data, etiqueta o municipi i consulta els models Mosquito Alert</li>' +
+      '<li><i class="fa fa-info" aria-hidden="true"></i>  Consulta la informació del mapa</li>' +
+      '<li><i class="fa fa-share-alt" aria-hidden="true"></i> Comparteix la vista del mapa</li>' +
+      '<li><i class="fa fa-file-text-o" aria-hidden="true"></i> Elabora informes personalitzats</li>' +
+      '<li><i class="fa fa-download" aria-hidden="true"></i> Descarrega les dades</li>' +
+      '<li><i class="fa fa-bell" aria-hidden="true"></i> Envia notificacions a participants</li>' +
+    '</ul>' +
+    '<p>El mapa conté informació de 5 espècies de mosquits vectors de malalties: el <b>mosquit tigre</b> (<em>Aedes albopictus</em>), el <b>mosquit de la febre groga</b> (<em>Aedes aegypti</em>), el <b>mosquit del Japó</b> (<em>Aedes japonicus</em>), el <b>mosquit de Corea</b> (<em>Aedes koreicus</em>) i el <b>mosquit comú</b> (<em>Culex pipiens</em>). A més, pots visualitzar possibles <b>llocs de cria</b> d\'aquests insectes en la via pública. Aquesta informació es complementa amb <b>models de probabilitat</b>, elaborats a partir de les dades ciutadanes i amb <b>l\'esforç de mostreig</b> o <b>distribució de participants</b>. </p>' +
+    '<p>Accedeix al <b>botó [?]</b> de cada capa o grup de capes, on trobaràs detalls de les diferents dades disponibles i el significat dels models.</p>' +
+    '<p>Per a més informació, visita <a href="http://www.mosquitoalert.com">www.mosquitoalert.com</a> o contacta amb profs@mosquitoalert.com</p>',
+  'observations.description': '<ul class="info_list">' +
+    '<li class="tiger_mosquito"> <b>Mosquit tigre</b>: Segons els experts, les fotos d\'aquesta observació podrien ser de mosquit tigre (Aedes albopictus). Si es veuen molt clarament els seus trets taxonòmics, especialment la ratlla blanca al cap i tòrax, serà "confirmat". Si no s\'aprecien alguns trets, serà "possible".</li>' +
+    '<li class="yellow_fever_mosquito"> <b>Mosquit febre groga</b>: Segons els experts, les fotos d\'aquesta observació podrien ser de mosquit de la febre groga (Aedes aegypti). Si es veuen molt clarament els seus trets taxonòmics, especialment la lira al cap i tòrax, serà "confirmat". Si no s\'aprecien alguns trets, serà "possible".</li>' +
+    '<li class="aedes_japonicus"> <b>Aedes japonicus</b>: Segons els experts, les fotos d\'aquesta observació podrien ser d\'Aedes japonicus. Si es veuen molt clarament els seus trets taxonòmics, especialment les línies daurades sobre el tòrax i l\'última secció del tercer parell de potes uniformement negra, serà “confirmat”. Si no s\'aprecien alguns trets, serà “possible”.</li>' +
+    '<li class="aedes_koreicus"> <b>Aedes koreicus</b>: Segons els experts, les fotos d\'aquesta observació podrien ser d\'Aedes koreicus. Si es veuen molt clarament els seus trets taxonòmics, especialment les línies daurades sobre el tòrax i l\'última secció del tercer parell de potes amb una banda blanca., serà “confirmat”. Si no s\'aprecien alguns trets, serà “possible”.</li>' +
+    '<li class="culex"> <b>Mosquit comú</b>: Segons els experts, les fotos d\'aquesta observació podrien ser de mosquit comú (Culex pipiens). Serà “confirmat” quan s\'apreciï el color groguenc i grandària del mosquit, uns palps maxil·lars curts i el final de l\'abdomen arrodonit. Si no s\'aprecien alguns trets, serà “possible”.</li>' +
+    '<li class="aedes_jap_kor"> <b>Aedes jap/kor</b>: Segons els experts, les fotos d\'aquesta observació podrien ser d\'Aedes japonicus o Aedes koreicus. Els experts no poden determinar amb seguretat de quin de les dues espècies es tracta, al no poder apreciar a la foto el caràcter que les distingeix.</li>' +
+    '<li class="aedes_albo_cret"> <b>Aedes albo/cret</b>: Segons els experts, les fotos d\'aquesta observació podrien ser d\'Aedes albopictus o Aedes cretinus. Els experts no poden determinar amb seguretat de quin de les dues espècies es tracta, al no poder apreciar a la foto el caràcter que les distingeix.</li>' +
+    '<li class="other_species"> <b>Altres espècies</b>: Segons els experts, les fotos d\'aquesta observació podrien ser d\'altres espècies de mosquit.</li>' +
+    '<li class="unidentified"> <b>No identificable</b>: Segons els experts, aquestes observacions i les seves fotos no permeten identificar cap espècie de mosquit.</li>' +
+    '<li class="unclassified private"><b>Per validar</b>: Observacions amb foto que encara no han estat validades per experts.</li>' +
+    '<li class="site"> <b>Llocs de cria</b>: Observacions ciutadanes de possibles llocs de cria (imbornals) de qualsevol de les 5 espècies estudiades per Mosquito Alert.</li>' +
+    '<li class="trash_layer private"> <b>Altres observacions</b>: Observacions que no corresponen a cap altra categoria però que podrien contenir informació d\'interès per als gestors.</li>' +
+    '</ul>',
+  'models.description': '<ul class="info_list">' +
+    '<li><b>Probabilitat Mosquit Alert</b>: Probabilitat de trobada amb mosquit tigre (Aedes albopictus) o mosquit del Japó (Aedes japonicus) basada en les observacions rebudes per Mosquito Alert. Més detalls en la capa del mapa, botó [?]. </li>' +
+    '<li><b>Probabilitat picades</b>: Probabilitat de rebre una picada de mosquit basada en les notificacions rebudes en Mosquito Alert. Més detalls en la capa del mapa, botó [?].</li>' +
+    '<li><b>Probabilitat malaltia</b>: Models de predicció de risc de malalties arbovirals per als municipis de Catalunya. Més detalls en la capa del mapa, botó [?].</li>' +
+    '</ul>',
+  'layer.predictionmodels.viruscontent' : 'Models de predicció de risc de malalties arbovirals per als municipis de Catalunya. Les probabilitats s\'estimen considerant tant informació de casos importats de les malalties com de variables climàtiques, abundància de mosquits i factors socioeconòmics. Els models s\'han desenvolupat dins del projecte Plataforma Integral per al Control d’Arbovirosis a Catalunya (PICAT) coordinat pel Vall d\'Hebron Institut de Recerca (VHIR) en col·laboració amb l\'Agència de Salut Pública de Catalunya (ASPCAT), ISGlobal i Mosquito Alert.',
 };
 _.extend(trans.ca, add);

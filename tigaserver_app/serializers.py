@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from taggit.models import Tag
 from tigaserver_app.models import Notification, NotificationContent, TigaUser, Mission, MissionTrigger, MissionItem, Report, ReportResponse,  Photo, \
-    Fix, Configuration, CoverageArea, CoverageAreaMonth, TigaProfile
+    Fix, Configuration, CoverageArea, CoverageAreaMonth, TigaProfile, Session
 from django.contrib.auth.models import User
 
 def score_label(score):
@@ -32,11 +32,11 @@ def custom_render_notification(notification,locale):
 
 class UserSerializer(serializers.ModelSerializer):
 
-    def validate_user_UUID(self, attrs, source):
+    def validate_user_UUID(self, attrs):
         """
         Check that the user_UUID has exactly 36 characters.
         """
-        value = attrs[source]
+        value = attrs
         if len(str(value)) != 36:
             raise serializers.ValidationError("Make sure user_UUID is EXACTLY 36 characters.")
         return attrs
@@ -57,30 +57,57 @@ class MissionTriggerSerializer(serializers.ModelSerializer):
 
 
 class MissionSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
-    title_catalan = serializers.CharField()
-    title_spanish = serializers.CharField()
-    title_english = serializers.CharField()
-    short_description_catalan = serializers.CharField()
-    short_description_spanish = serializers.CharField()
-    short_description_english = serializers.CharField()
-    long_description_catalan = serializers.CharField()
-    long_description_spanish = serializers.CharField()
-    long_description_english = serializers.CharField()
-    help_text_catalan = serializers.CharField()
-    help_text_spanish = serializers.CharField()
-    help_text_english = serializers.CharField()
-    creation_time = serializers.DateTimeField()
-    expiration_time = serializers.DateTimeField()
-    platform = serializers.CharField()
-    url = serializers.URLField()
-    photo_mission = serializers.BooleanField()
+    # id = serializers.IntegerField()
+    # title_catalan = serializers.CharField()
+    # title_spanish = serializers.CharField()
+    # title_english = serializers.CharField()
+    # short_description_catalan = serializers.CharField()
+    # short_description_spanish = serializers.CharField()
+    # short_description_english = serializers.CharField()
+    # long_description_catalan = serializers.CharField()
+    # long_description_spanish = serializers.CharField()
+    # long_description_english = serializers.CharField()
+    # help_text_catalan = serializers.CharField()
+    # help_text_spanish = serializers.CharField()
+    # help_text_english = serializers.CharField()
+    # creation_time = serializers.DateTimeField()
+    # expiration_time = serializers.DateTimeField()
+    # platform = serializers.CharField()
+    # url = serializers.URLField()
+    # photo_mission = serializers.BooleanField()
+    # items = MissionItemSerializer(many=True)
+    # triggers = MissionTriggerSerializer(many=True)
+    # mission_version = serializers.IntegerField()
+    id = serializers.ReadOnlyField()
+    title_catalan = serializers.ReadOnlyField()
+    title_spanish = serializers.ReadOnlyField()
+    title_english = serializers.ReadOnlyField()
+    short_description_catalan = serializers.ReadOnlyField()
+    short_description_spanish = serializers.ReadOnlyField()
+    short_description_english = serializers.ReadOnlyField()
+    long_description_catalan = serializers.ReadOnlyField()
+    long_description_spanish = serializers.ReadOnlyField()
+    long_description_english = serializers.ReadOnlyField()
+    help_text_catalan = serializers.ReadOnlyField()
+    help_text_spanish = serializers.ReadOnlyField()
+    help_text_english = serializers.ReadOnlyField()
+    creation_time = serializers.ReadOnlyField()
+    expiration_time = serializers.ReadOnlyField()
+    platform = serializers.ReadOnlyField()
+    url = serializers.ReadOnlyField()
+    photo_mission = serializers.ReadOnlyField()
     items = MissionItemSerializer(many=True)
     triggers = MissionTriggerSerializer(many=True)
-    mission_version = serializers.IntegerField()
+    mission_version = serializers.ReadOnlyField()
 
     class Meta:
         model = Mission
+        fields = '__all__'
+
+
+class SessionListingField(serializers.RelatedField):
+    def to_native(self, value):
+        return value.id
 
 
 class UserListingField(serializers.RelatedField):
@@ -102,12 +129,13 @@ class ReportListingField(serializers.RelatedField):
 class FullReportResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReportResponse
+        fields = '__all__'
 
 
 class ReportResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReportResponse
-        fields = ['question', 'answer']
+        fields = ['question', 'answer', 'question_id', 'answer_id', 'answer_value']
 
 class ReportSerializer(serializers.ModelSerializer):
 
@@ -125,7 +153,7 @@ class ReportSerializer(serializers.ModelSerializer):
     current_location_lat = serializers.FloatField(required=False)
     selected_location_lon = serializers.FloatField(required=False)
     selected_location_lat = serializers.FloatField(required=False)
-    note = serializers.CharField(required=False)
+    note = serializers.CharField(required=False, allow_blank=True)
     package_name = serializers.CharField(required=False)
     package_version = serializers.IntegerField(required=False)
     device_manufacturer = serializers.CharField(required=False)
@@ -135,28 +163,37 @@ class ReportSerializer(serializers.ModelSerializer):
     os_language = serializers.CharField(required=False)
     app_language = serializers.CharField(required=False)
     responses = ReportResponseSerializer(many=True)
+    session = SessionListingField
 
-    def validate_report_UUID(self, attrs, source):
+    def validate_report_UUID(self, attrs):
         """
         Check that the user_UUID has exactly 36 characters.
         """
-        value = attrs[source]
+        value = attrs
         if len(str(value)) != 36:
             raise serializers.ValidationError("Make sure report_UUID is EXACTLY 36 characters.")
         return attrs
 
-    def validate_type(self, attrs, source):
+    def validate_type(self, attrs):
         """
         Check that the report type is either 'adult', 'site', or 'mission'.
         """
-        value = attrs[source]
-        if value not in ['adult', 'site', 'mission']:
-            raise serializers.ValidationError("Make sure type is 'adult', 'site', or 'mission'.")
+        value = attrs
+        if value not in ['adult', 'site', 'mission', 'bite']:
+            raise serializers.ValidationError("Make sure type is 'adult', 'site', 'mission' or 'bite'.")
         return attrs
+
+    def create(self,validated_data):
+        responses_data = validated_data.pop('responses')
+        report = Report.objects.create(**validated_data)
+        for response in responses_data:
+            ReportResponse.objects.create(report=report, **response)
+        return report
 
     class Meta:
         model = Report
         depth = 0
+        fields = '__all__'
 
 
 class PhotoSerializer(serializers.ModelSerializer):
@@ -167,12 +204,16 @@ class PhotoSerializer(serializers.ModelSerializer):
         depth = 0
         fields = ['photo', 'report']
 
+class SessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Session
+        fields = ['id', 'session_ID', 'user', 'session_start_time', 'session_end_time']
 
 class FixSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Fix
-        fields = ['user_coverage_uuid', 'fix_time', 'phone_upload_time', 'masked_lon', 'masked_lat', 'power']
+        fields = ['user_coverage_uuid', 'fix_time', 'phone_upload_time', 'masked_lon', 'masked_lat', 'power', 'mask_size']
 
 
 class ConfigurationSerializer(serializers.ModelSerializer):
@@ -181,19 +222,62 @@ class ConfigurationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Configuration
+        fields = '__all__'
+
+class DetailedPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Photo
+        fields = ['id', 'photo', 'uuid']
 
 class NearbyReportSerializer(serializers.ModelSerializer):
+    user = UserListingField
     version_UUID = serializers.CharField()
-    lon = serializers.Field()
-    lat = serializers.Field()
-    simplified_annotation = serializers.Field()
+    version_number = serializers.IntegerField()
+    report_id = serializers.CharField()
+    server_upload_time = serializers.ReadOnlyField()
+    phone_upload_time = serializers.DateTimeField()
+    creation_time = serializers.DateTimeField()
+    version_time = serializers.DateTimeField()
+    type = serializers.CharField()
+    location_choice = serializers.CharField()
+    current_location_lon = serializers.FloatField(required=False)
+    current_location_lat = serializers.FloatField(required=False)
+    selected_location_lon = serializers.FloatField(required=False)
+    selected_location_lat = serializers.FloatField(required=False)
+    note = serializers.CharField(required=False)
+    package_name = serializers.CharField(required=False)
+    package_version = serializers.IntegerField(required=False)
+    device_manufacturer = serializers.CharField(required=False)
+    device_model = serializers.CharField(required=False)
+    os = serializers.CharField(required=False)
+    os_version = serializers.CharField(required=False)
+    os_language = serializers.CharField(required=False)
+    app_language = serializers.CharField(required=False)
+    responses = ReportResponseSerializer(many=True)
+    simplified_annotation = serializers.ReadOnlyField()
+    photos = DetailedPhotoSerializer(many=True)
+
     class Meta:
         model = Report
-        exclude = ('version_number', 'user', 'report_id', 'server_upload_time', 'phone_upload_time', 'version_time',
-                   'location_choice', 'current_location_lon', 'current_location_lat', 'mission',
-                   'selected_location_lon', 'selected_location_lat', 'note', 'package_name', 'package_version',
-                   'device_manufacturer', 'device_model', 'os', 'os_version', 'os_language', 'app_language', 'hide', 'type')
+        fields = '__all__'
 
+
+'''
+class NearbyReportSerializer(serializers.ModelSerializer):
+    version_UUID = serializers.ReadOnlyField()
+    lon = serializers.ReadOnlyField()
+    lat = serializers.ReadOnlyField()
+    simplified_annotation = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Report
+        fields = ['version_UUID','lon','lat','simplified_annotation']
+        # exclude = ('version_number', 'user', 'report_id','creation_time','server_upload_time', 'phone_upload_time', 'version_time',
+        #            'location_choice', 'current_location_lon', 'current_location_lat', 'mission',
+        #            'selected_location_lon', 'selected_location_lat', 'note', 'package_name', 'package_version',
+        #            'device_manufacturer', 'device_model', 'os', 'os_version', 'os_language', 'app_language', 'hide',
+        #            'type','point')
+'''
 
 class ReportIdSerializer(serializers.ModelSerializer):
     version_UUID = serializers.CharField()
@@ -208,26 +292,28 @@ class ReportIdSerializer(serializers.ModelSerializer):
 
 class MapDataSerializer(serializers.ModelSerializer):
     version_UUID = serializers.CharField()
-    creation_time = serializers.DateTimeField()
-    creation_date = serializers.DateTimeField()
-    creation_day_since_launch = serializers.Field()
-    creation_year = serializers.Field()
-    creation_month = serializers.Field()
-    site_cat = serializers.Field()
+    #creation_time = serializers.DateTimeField()
+    creation_time = serializers.ReadOnlyField()
+    #creation_date = serializers.DateTimeField()
+    creation_date = serializers.ReadOnlyField()
+    creation_day_since_launch = serializers.ReadOnlyField()
+    creation_year = serializers.ReadOnlyField()
+    creation_month = serializers.ReadOnlyField()
+    site_cat = serializers.ReadOnlyField()
     type = serializers.CharField()
-    lon = serializers.Field()
-    lat = serializers.Field()
-    movelab_annotation = serializers.Field()
-    movelab_annotation_euro = serializers.Field()
-    tiger_responses = serializers.Field()
-    tiger_responses_text = serializers.Field()
-    site_responses = serializers.Field()
-    site_responses_text = serializers.Field()
-    tigaprob_cat = serializers.Field()
-    visible = serializers.Field()
-    latest_version = serializers.Field()
-    n_photos = serializers.Field()
-    final_expert_status_text = serializers.Field()
+    lon = serializers.ReadOnlyField()
+    lat = serializers.ReadOnlyField()
+    movelab_annotation = serializers.ReadOnlyField()
+    movelab_annotation_euro = serializers.ReadOnlyField()
+    tiger_responses = serializers.ReadOnlyField()
+    tiger_responses_text = serializers.ReadOnlyField()
+    site_responses = serializers.ReadOnlyField()
+    site_responses_text = serializers.ReadOnlyField()
+    tigaprob_cat = serializers.ReadOnlyField()
+    visible = serializers.ReadOnlyField()
+    latest_version = serializers.ReadOnlyField()
+    n_photos = serializers.ReadOnlyField()
+    final_expert_status_text = serializers.ReadOnlyField()
     responses = FullReportResponseSerializer(many=True)
 
     class Meta:
@@ -318,42 +404,38 @@ class TigaProfileSerializer(serializers.ModelSerializer):
         model = TigaProfile
         fields = ('id', 'firebase_token', 'score', 'profile_devices')
 
-class DetailedPhotoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Photo
-        fields = ('id', 'photo', 'uuid')
 
 class DetailedReportSerializer(serializers.ModelSerializer):
 
     photos = DetailedPhotoSerializer(many=True)
     user = UserListingField
-    version_UUID = serializers.CharField()
-    version_number = serializers.IntegerField()
-    report_id = serializers.CharField()
-    phone_upload_time = serializers.DateTimeField()
-    creation_time = serializers.DateTimeField()
-    version_time = serializers.DateTimeField()
-    type = serializers.CharField()
-    mission = MissionListingField
-    location_choice = serializers.CharField()
-    current_location_lon = serializers.FloatField(required=False)
-    current_location_lat = serializers.FloatField(required=False)
-    selected_location_lon = serializers.FloatField(required=False)
-    selected_location_lat = serializers.FloatField(required=False)
-    note = serializers.CharField(required=False)
-    package_name = serializers.CharField(required=False)
-    package_version = serializers.IntegerField(required=False)
-    device_manufacturer = serializers.CharField(required=False)
-    device_model = serializers.CharField(required=False)
-    os = serializers.CharField(required=False)
-    os_version = serializers.CharField(required=False)
-    os_language = serializers.CharField(required=False)
-    app_language = serializers.CharField(required=False)
+    version_UUID = serializers.ReadOnlyField()
+    version_number = serializers.ReadOnlyField()
+    report_id = serializers.ReadOnlyField()
+    phone_upload_time = serializers.ReadOnlyField()
+    creation_time = serializers.ReadOnlyField()
+    version_time = serializers.ReadOnlyField()
+    type = serializers.ReadOnlyField()
+    location_choice = serializers.ReadOnlyField()
+    current_location_lon = serializers.ReadOnlyField()
+    current_location_lat = serializers.ReadOnlyField()
+    selected_location_lon = serializers.ReadOnlyField()
+    selected_location_lat = serializers.ReadOnlyField()
+    note = serializers.ReadOnlyField()
+    package_name = serializers.ReadOnlyField()
+    package_version = serializers.ReadOnlyField()
+    device_manufacturer = serializers.ReadOnlyField()
+    device_model = serializers.ReadOnlyField()
+    os = serializers.ReadOnlyField()
+    os_version = serializers.ReadOnlyField()
+    os_language = serializers.ReadOnlyField()
+    app_language = serializers.ReadOnlyField()
     responses = ReportResponseSerializer(many=True)
     point = serializers.SerializerMethodField(method_name='get_point')
 
     class Meta:
         model = Report
+        fields = '__all__'
 
     def get_point(self,obj):
         if obj.point is not None:

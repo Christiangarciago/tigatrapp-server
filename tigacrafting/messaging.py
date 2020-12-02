@@ -3,13 +3,16 @@ import json
 import socket
 import struct
 import binascii
-import urllib2
+#import urllib2
+import urllib
 import json
 from tigaserver_project import settings_local
 from tigaserver_project import settings
 from datetime import date, datetime
 #from tigaserver_app.models import TigaUser
 #from tigaserver_app.models import Notification
+
+
 
 
 def stringify_date(notification):
@@ -113,8 +116,8 @@ def send_message_android(token,title, message, notification=None):
                 }
 
             values = json.dumps(values)
-            req = urllib2.Request(url, values, headers)
-            resp = urllib2.urlopen(req)
+            req = urllib.request.Request(url, values, headers)
+            resp = urllib.request.urlopen(req)
             resp_txt = resp.read()
             return resp_txt
 

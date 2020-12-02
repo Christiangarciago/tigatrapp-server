@@ -37,9 +37,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 
-TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
-    'django.core.context_processors.request',
-)
+# TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
+#     'django.core.context_processors.request',
+# )
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -57,15 +57,18 @@ INSTALLED_APPS = (
     'tigapublic',
     'rest_framework',
     'leaflet',
-    'south',
     'stats',
     'floppyforms',
     'taggit',
     'django_messages',
     'tigaserver_messages',
     'tigascoring',
+    'rest_framework_swagger',
+    'django.contrib.sites',
+    'django_filters',
 )
 
+'''
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -75,6 +78,16 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+'''
+MIDDLEWARE = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
 
 ROOT_URLCONF = 'tigaserver_project.urls'
 
@@ -119,6 +132,23 @@ LANGUAGES = (
     ('es', _('Spanish')),
     ('ca', _('Catalan')),
     ('en', _('English')),
+    ('de', _('German')),
+    ('sq', _('Albanian')),
+    ('el', _('Greek')),
+    ('hu', _('Hungarian')),
+    ('pt', _('Portuguese')),
+    ('sl', _('Slovenian')),
+    ('it', _('Italian')),
+    ('fr', _('French')),
+    ('bg', _('Bulgarian')),
+    ('bg', _('Bulgarian')),
+    ('ro', _('Romanian')),
+    ('hr', _('Croatian')),
+    ('mk', _('Macedonian')),
+    ('sr', _('Serbian')),
+    ('lb', _('Letzeburgesch')),
+    ('nl', _('Dutch')),
+    ('tr', _('Turkish')),
     ('zh-cn', _('Chinese')),
 )
 
@@ -161,7 +191,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser',
     ),
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend',]
 }
 
 LEAFLET_CONFIG = {
@@ -193,7 +223,23 @@ LEAFLET_CONFIG = {
     }
 }
 
-TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+#TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 # This is the cuttoff score above which a photo will be considered "crowd-validated"
 CROWD_VALIDATION_CUTOFF = 0
@@ -207,13 +253,15 @@ SOUTH_MIGRATION_MODULES = {
     'django_messages': 'django_messages.south_migrations',
 }
 
-USERS_IN_STATS = [16, 33, 18, 17, 31, 32, 35, 34, 54, 55, 49]
+USERS_IN_STATS = [16, 33, 18, 17, 31, 32, 35, 34, 54, 55, 49, 130, 123, 126, 131, 129, 127, 124, 128, 125]
 
 #PUSH KILL SWITCHES
 DISABLE_PUSH_IOS = False
 DISABLE_PUSH_ANDROID = False
 #Completely disables notifications for achievements/rewards
-DISABLE_ACHIEVEMENT_NOTIFICATIONS = True
+DISABLE_ACHIEVEMENT_NOTIFICATIONS = False
+#Minimum package version for scoring notifications
+MINIMUM_PACKAGE_VERSION_SCORING_NOTIFICATIONS = 32
 
 # CELERY STUFF
 BROKER_URL = 'redis://localhost:6379'
@@ -228,7 +276,6 @@ APNS_ADDRESS = 'gateway.push.apple.com'
 #APNS_ADDRESS = 'gateway.sandbox.push.apple.com'
 FCM_ADDRESS = 'https://fcm.googleapis.com/fcm/send'
 
-from settings_local import *
 
 IDENTICON_FOREGROUNDS = [ "rgb(45,79,255)",
                "rgb(254,180,44)",
@@ -250,3 +297,13 @@ ENTOLAB_ADMIN = 'a.escobar@creaf.uab.cat'
 SHOW_USER_AGREEMENT_ENTOLAB = False
 
 HOST_NAME = 'webserver.mosquitoalert.com'
+
+SITE_ID = 1
+from tigaserver_project.settings_local import *
+
+# Disable notifications for messaging system. It falls back to email if pinax not present
+DJANGO_MESSAGES_NOTIFY = False
+
+# Mainly concerning files in media (i.e pictures). In some cases, the files have 0600 permissions, so they can't be
+# opened from a internet browser. This ensures that all files in media will be world (and group) readable
+FILE_UPLOAD_PERMISSIONS = 0o644

@@ -25,6 +25,29 @@
     </head>
     <body>
         <div class="container">
+            <div class="row content">
+                <div class="col-xs-12">
+                    <p>{% trans 'user_ranking_info_text_1' %}</p>
+                    <!--<p>Consulta tu puntuación y nivel adquirido. En el menú ajustes encontrarás información detallada sobre el sistema de puntuación de Mosquito Alert.</p>-->
+                </div>
+                <div class="col-xs-12">
+                    {% if user_id %}
+                        {% if user_has_score %}
+                            <p>{% trans 'user_ranking_info_text_2' %} <a href="{{ info_url }}">{% trans 'user_ranking_info_text_3' %}</a></p>
+                        {% else %}
+                            <div class="panel panel-primary">
+                                <div class="panel-body">
+                                    <p>{% trans 'no_score_yet' %}</p>
+                                    <p>{% trans 'user_ranking_info_text_2' %} <a href="{{ info_url }}">{% trans 'user_ranking_info_text_3' %}</a></p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p>{% trans 'user_ranking_info_text_2' %} <a href="{{ info_url }}">{% trans 'user_ranking_info_text_3' %}</a></p>
+                    {% endif %}
+                    <!--<p>Más info sobre la <a href="{{ info_url }}">puntuación</a></p>-->
+                </div>
+            </div>
             {% if user_id %}
                 <div class="row content controls">
                     {{ pagination.start }} - {{ pagination.end }} of {{ pagination.total }}
@@ -71,7 +94,7 @@
             {% for row in data %}
             {% if row.user_uuid == user_id %}
             <div class="row content">
-                <p>This is you!</p>
+                <p class="badge badge-error">{% trans 'This is you!' %}</p>
             </div>
             {% endif %}
             <div id="{{ row.user_uuid }}" class="row content clickable size-4 {% if row.user_uuid == user_id %} mine pulse {% endif %}">
@@ -82,7 +105,7 @@
             </div>
             <div id="hidden_{{ row.user_uuid }}" class="row content info" style="display:none;">
                 <div class="col-xs-12">
-                    <div id="progress_{{ row.user_uuid }}" class="row loading">Loading data ...</div>
+                    <div id="progress_{{ row.user_uuid }}" class="row loading"></div>
                     <div id="detail_{{ row.user_uuid }}">
                         <!--
                         <div class="row">
@@ -108,7 +131,7 @@
                         </div>
                         -->
                     </div>
-                    <a href={% url "stats_user_score" row.user_uuid %} target="_blank">link!</a>
+                    <a id="moreinfo_{{ row.user_uuid }}" class="badge badge-info" style="font-size:16px;display:none;" href={% url "stats_user_score" row.user_uuid %} target="_blank">{% trans 'Score details' %}</a>
                 </div>
             </div>
             <hr>
